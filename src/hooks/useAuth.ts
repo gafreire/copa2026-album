@@ -22,8 +22,12 @@ export function useAuth() {
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password })
 
-  const signUp = (email: string, password: string) =>
-    supabase.auth.signUp({ email, password })
+  const signUp = (
+    email: string,
+    password: string,
+    options?: { data: Record<string, string> }
+  ) =>
+    supabase.auth.signUp({ email, password, options })
 
   const signOut = () => supabase.auth.signOut()
 

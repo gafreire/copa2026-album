@@ -3,6 +3,13 @@ export type User = {
   email: string
 }
 
+export type Profile = {
+  id: string
+  full_name: string | null
+  email: string | null
+  created_at: string
+}
+
 export type Sticker = {
   id: string        // ex: "BRA-01"
   countryCode: string

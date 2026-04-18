@@ -30,24 +30,36 @@ const EyeOffIcon = () => (
   </svg>
 )
 
-export function LoginPage() {
-  const { signIn } = useAuth()
+export function RegisterPage() {
+  const { signUp } = useAuth()
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async () => {
-    if (!email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
       setError('Preencha todos os campos.')
       return
     }
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.')
+      return
+    }
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.')
+      return
+    }
+
     setLoading(true)
     setError(null)
 
-    const { error } = await signIn(email, password)
+    const { error } = await signUp(email, password, { data: { full_name: name } })
 
     if (error) {
       setError(error.message)
@@ -77,9 +89,22 @@ export function LoginPage() {
 
       <Card>
         <CardTitle>
-          <h2>Sign in</h2>
+          <h2>Sign up</h2>
           <div />
         </CardTitle>
+
+        <FieldGroup>
+          <label>Name</label>
+          <InputWrapper>
+            <input
+              type="text"
+              placeholder="Neymar Jr."
+              value={name}
+              onChange={e => setName(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </InputWrapper>
+        </FieldGroup>
 
         <FieldGroup>
           <label>Email</label>
@@ -114,11 +139,30 @@ export function LoginPage() {
           </InputWrapper>
         </FieldGroup>
 
+        <FieldGroup>
+          <label>Confirm Password</label>
+          <InputWrapper>
+            <input
+              type={showConfirm ? 'text' : 'password'}
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              className="toggle-password"
+              onClick={() => setShowConfirm(v => !v)}
+              type="button"
+            >
+              {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </InputWrapper>
+        </FieldGroup>
 
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <LoginButton onClick={handleSubmit} disabled={loading} $loading={loading}>
-          {loading ? 'Loading...' : 'Login'}
+          {loading ? 'Loading...' : 'Create Account'}
           {!loading && (
             <img
               src="/src/assets/soccer-ball.svg"
@@ -129,8 +173,8 @@ export function LoginPage() {
         </LoginButton>
 
         <SignUpRow>
-          Don't have an account?
-          <button onClick={() => navigate('/register')}>Sign up</button>
+          Already have an account?
+          <button onClick={() => navigate('/login')}>Sign in</button>
         </SignUpRow>
       </Card>
     </Page>

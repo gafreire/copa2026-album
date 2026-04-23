@@ -3,27 +3,27 @@ export type User = {
   email: string
 }
 
-export type Profile = {
-  id: string
-  full_name: string | null
-  email: string | null
-  created_at: string
-}
-
-export type Sticker = {
-  id: string        // ex: "BRA-01"
-  countryCode: string
-  countryName: string
-  number: number
-  owned: boolean
-}
-
 export type Country = {
   code: string
   name: string
   group: string
   flagUrl: string
   totalStickers: number
+  colors: [string, string]
+}
+
+export type SpecialSection = {
+  code: string
+  name: string
+  totalStickers: number
+  color: string
+}
+
+export type Profile = {
+  id: string
+  full_name: string | null
+  email: string | null
+  created_at: string
 }
 
 export type Match = {

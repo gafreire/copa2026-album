@@ -1,12 +1,4 @@
 import styled, { keyframes } from 'styled-components'
-declare module 'styled-components' {
-  export interface DefaultTheme {
-    colors: {
-      primary: string
-      error: string
-    }
-  }
-}
 
 export const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(24px); }

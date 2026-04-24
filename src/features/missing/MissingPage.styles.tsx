@@ -9,11 +9,7 @@ export const Page = styled.div`
   min-height: 100vh;
   background: ${({ theme }) => theme.colors.background};
   padding-bottom: 90px;
-
-  @media (min-width: 768px) {
-    padding-left: 240px;
-    padding-bottom: 0;
-  }
+  @media (min-width: 768px) { padding-left: 240px; padding-bottom: 0; }
 `
 
 export const Header = styled.header`
@@ -80,10 +76,7 @@ export const Content = styled.div`
   padding: 14px;
   max-width: 640px;
   margin: 0 auto;
-
-  @media (min-width: 768px) {
-    padding: 20px 32px;
-  }
+  @media (min-width: 768px) { padding: 20px 32px; }
 `
 
 export const SectionDivider = styled.div`
@@ -91,7 +84,6 @@ export const SectionDivider = styled.div`
   align-items: center;
   gap: 8px;
   margin: 18px 0 8px;
-
   &:first-child { margin-top: 0; }
 `
 
@@ -102,7 +94,6 @@ export const FlagCircle = styled.div`
   overflow: hidden;
   flex-shrink: 0;
   border: 1px solid rgba(255,255,255,0.1);
-
   img { width: 100%; height: 100%; object-fit: cover; }
 `
 
@@ -140,44 +131,48 @@ export const Grid = styled.div`
   gap: 8px;
 `
 
-export const StickerSlot = styled.button<{ $color1: string; $color2: string }>`
+export const StickerSlot = styled.button<{ $color1: string; $color2: string; $marked: boolean }>`
   aspect-ratio: 3/4;
   border-radius: 8px;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.surface};
+  border: 1.5px solid ${({ $marked, $color1, theme }) => $marked ? $color1 : theme.colors.border};
+  background: ${({ $marked, $color1, $color2, theme }) =>
+    $marked
+      ? `linear-gradient(135deg, ${$color1}35, ${$color2}20)`
+      : theme.colors.surface
+  };
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
   animation: ${fadeUp} 0.25s ease both;
+  opacity: ${({ $marked }) => $marked ? 0.55 : 1};
 
   &:hover {
     border-color: ${({ $color1 }) => $color1};
     background: linear-gradient(135deg, ${({ $color1 }) => $color1}30, ${({ $color2 }) => $color2}18);
-    transform: scale(1.05);
+    transform: scale(1.04);
+    opacity: 1;
   }
 `
 
-export const StickerCircle = styled.div<{ $color: string }>`
+export const StickerCircle = styled.div<{ $color: string; $marked: boolean }>`
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  transition: border-color 0.15s;
-
-  ${StickerSlot}:hover & {
-    border-color: ${({ $color }) => $color};
-  }
+  border: 1.5px solid ${({ $marked, $color }) => $marked ? $color : 'rgba(255,255,255,0.2)'};
+  background: ${({ $marked, $color }) => $marked ? $color + '40' : 'transparent'};
+  transition: all 0.2s;
 `
 
-export const StickerId = styled.span`
-  font-size: 0.5rem;
+export const StickerId = styled.span<{ $marked: boolean }>`
+  font-size: 0.6rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.3);
+  color: ${({ $marked }) => $marked ? 'rgba(255,255,255,0.6)' : 'rgb(255, 255, 255)'};
+  transition: color 0.2s;
+  text-decoration: ${({ $marked }) => $marked ? 'line-through' : 'none'};
 `
 
 export const EmptyState = styled.div`

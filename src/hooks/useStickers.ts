@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from './useAuth'
 import { supabase } from '../lib/supabase'
 import { ALL_STICKER_IDS } from '../lib/constants'
-
 
 export function useStickers() {
   const { session } = useAuth()
@@ -22,29 +22,50 @@ export function useStickers() {
       })
   }, [session])
 
-  const toggle = async (stickerId: string) => {
+  const toggle = useCallback(async (stickerId: string) => {
     if (!session?.user.id) return
     const isOwned = owned.has(stickerId)
 
+    // 1. Atualiza o estado local imediatamente — sem esperar o Supabase
     setOwned(prev => {
       const next = new Set(prev)
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       isOwned ? next.delete(stickerId) : next.add(stickerId)
       return next
     })
 
+    // 2. Sincroniza com o Supabase em background — sem await no caller
     if (isOwned) {
-      await supabase
+      supabase
         .from('stickers')
         .delete()
         .eq('user_id', session.user.id)
         .eq('sticker_id', stickerId)
+        .then(({ error }) => {
+          if (error) {
+            // Reverte se falhou
+            setOwned(prev => {
+              const next = new Set(prev)
+              next.add(stickerId)
+              return next
+            })
+          }
+        })
     } else {
-      await supabase
+      supabase
         .from('stickers')
         .insert({ user_id: session.user.id, sticker_id: stickerId })
+        .then(({ error }) => {
+          if (error) {
+            // Reverte se falhou
+            setOwned(prev => {
+              const next = new Set(prev)
+              next.delete(stickerId)
+              return next
+            })
+          }
+        })
     }
-  }
+  }, [session, owned])
 
   const ownedCount = owned.size
   const totalCount = ALL_STICKER_IDS.length

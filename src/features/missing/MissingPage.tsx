@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react-hooks/refs */
-import { useState, useRef } from 'react'
+import { useRef, useState, useCallback, memo } from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useProfile } from '../../hooks/useProfile'
@@ -9,9 +9,10 @@ import { COUNTRIES, SPECIAL_SECTIONS, getStickerIds } from '../../lib/constants'
 import { AppNav } from '../../components/AppNav'
 import { Avatar, ThemeDot, ThemeToggle } from '../album/AlbumPage.styles'
 import {
-  Page, HeaderRight, Content, SectionDivider,
+  Page, HeaderRight, ProgressPill, ProgressPillBar,
+  ProgressPillFill, ProgressPillText, Content, SectionDivider,
   FlagCircle, SpecialDot, DividerName, DividerLine, Grid,
-  StickerSlot, StickerCircle, StickerId, EmptyState,
+  StickerSlot, StickerCircle, StickerId, EmptyState, SectionWrapper,
 } from './MissingPage.styles'
 
 type Section = {
@@ -24,7 +25,7 @@ type Section = {
 }
 
 function buildSections(owned: Set<string>): Section[] {
-  const allSections = [
+  return [
     ...SPECIAL_SECTIONS.map(s => ({
       code: s.code, name: s.name,
       color1: s.color, color2: s.color + '88',
@@ -38,19 +39,35 @@ function buildSections(owned: Set<string>): Section[] {
       ids: getStickerIds(c.code, c.totalStickers),
     })),
   ]
-
-  return allSections
     .map(s => ({ ...s, missingIds: s.ids.filter(id => !owned.has(id)) }))
     .filter(s => s.missingIds.length > 0)
 }
+
+// Slot isolado com memo — só re-renderiza se suas props mudarem
+const Slot = memo(({ id, color1, color2, isMarked, onToggle }: {
+  id: string
+  color1: string
+  color2: string
+  isMarked: boolean
+  onToggle: (id: string) => void
+}) => (
+  <StickerSlot
+    $color1={color1}
+    $color2={color2}
+    $marked={isMarked}
+    onClick={() => onToggle(id)}
+  >
+    <StickerCircle $color={color1} $marked={isMarked} />
+    <StickerId $marked={isMarked}>{id}</StickerId>
+  </StickerSlot>
+))
 
 export function MissingPage() {
   const { themeName, toggleTheme } = useThemeContext()
   const { profile } = useProfile()
   const { signOut } = useAuth()
-  const { owned, toggle, loading } = useStickers()
+  const { owned, toggle, totalCount, ownedCount, percentage, loading } = useStickers()
 
-  // Snapshot — só criado uma vez quando os dados chegam
   const snapshotRef = useRef<Section[] | null>(null)
   if (!loading && snapshotRef.current === null) {
     snapshotRef.current = buildSections(owned)
@@ -58,14 +75,15 @@ export function MissingPage() {
 
   const [toggled, setToggled] = useState<Set<string>>(new Set())
 
-  const handleToggle = (id: string) => {
+  // useCallback evita recriar a função a cada render
+  const handleToggle = useCallback((id: string) => {
     toggle(id)
     setToggled(prev => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
-  }
+  }, [toggle])
 
   const initials = profile?.full_name
     ? profile.full_name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -73,6 +91,12 @@ export function MissingPage() {
 
   const headerRight = (
     <HeaderRight>
+      <ProgressPill>
+        <ProgressPillBar>
+          <ProgressPillFill $pct={percentage} />
+        </ProgressPillBar>
+        <ProgressPillText>{ownedCount}/{totalCount}</ProgressPillText>
+      </ProgressPill>
       <ThemeToggle onClick={toggleTheme}>
         <ThemeDot $color="#f5c800" $active={themeName === 'yellow'} />
         <ThemeDot $color="#009cde" $active={themeName === 'blue'} />
@@ -98,8 +122,8 @@ export function MissingPage() {
             <span>Você tem todas as figurinhas.</span>
           </EmptyState>
         ) : (
-          snapshot.map((section, sIdx) => (
-            <div key={section.code} style={{ animationDelay: `${sIdx * 0.03}s` }}>
+          snapshot.map(section => (
+            <SectionWrapper key={section.code}>
               <SectionDivider>
                 {section.flagUrl ? (
                   <FlagCircle>
@@ -113,24 +137,18 @@ export function MissingPage() {
               </SectionDivider>
 
               <Grid>
-                {section.missingIds.map((id, idx) => {
-                  const isMarked = toggled.has(id)
-                  return (
-                    <StickerSlot
-                      key={id}
-                      $color1={section.color1}
-                      $color2={section.color2}
-                      $marked={isMarked}
-                      onClick={() => handleToggle(id)}
-                      style={{ animationDelay: `${idx * 0.015}s` }}
-                    >
-                      <StickerCircle $color={section.color1} $marked={isMarked} />
-                      <StickerId $marked={isMarked}>{id}</StickerId>
-                    </StickerSlot>
-                  )
-                })}
+                {section.missingIds.map(id => (
+                  <Slot
+                    key={id}
+                    id={id}
+                    color1={section.color1}
+                    color2={section.color2}
+                    isMarked={toggled.has(id)}
+                    onToggle={handleToggle}
+                  />
+                ))}
               </Grid>
-            </div>
+            </SectionWrapper>
           ))
         )}
       </Content>

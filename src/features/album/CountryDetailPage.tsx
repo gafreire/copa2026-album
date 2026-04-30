@@ -16,8 +16,8 @@ export function CountryDetailPage() {
 
   if (!entity) return <Page><p style={{ padding: 20, color: 'white' }}>Não encontrado.</p></Page>
 
-  const color1 = country ? country.colors[0] : special!.color
-  const color2 = country ? country.colors[1] : special!.color + '88'
+  const color1 = country ? country.colors[0] : special!.colors[0]
+  const color2 = country ? country.colors[1] : special!.colors[1]
   const ids = getStickerIds(entity.code, entity.totalStickers)
   const ownedCount = ids.filter(id => owned.has(id)).length
   const pct = Math.round((ownedCount / ids.length) * 100)
@@ -40,7 +40,7 @@ export function CountryDetailPage() {
           {country ? (
             <FlagCircle><img src={country.flagUrl} alt={country.name} /></FlagCircle>
           ) : (
-            <SpecialIcon $color={special!.color}>✦</SpecialIcon>
+            <SpecialIcon $color={special!.colors[0]}>✦</SpecialIcon>
           )}
           <HeaderInfo>
             <HeaderRow>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { COUNTRIES, SPECIAL_SECTIONS, getStickerIds } from '../../lib/constants'
+import { CC_SECTION, COUNTRIES, HIST_SECTION, INTRO_SECTION, getSpecialStickerIds, getStickerIds } from '../../lib/constants'
 import { useStickers } from '../../hooks/useStickers'
 import { AppNav } from '../../components/AppNav'
 import { CompleteBadge, Content, FlagCircle, MainCard, MissingLabel, MissingNumber, Page, ProgressBarFill, ProgressBarTrack, ProgressMeta, ProgressMetaText, SectionTitle, SpecialIcon, StatBadge, StatCard, StatInfo, StatName, StatSub } from './DashboardPage.styles'
@@ -11,20 +11,26 @@ export function DashboardPage() {
 
   const stats = useMemo(() => {
     const allSections = [
-      ...SPECIAL_SECTIONS.map(s => ({
-        code: s.code, name: s.name,
-        color1: s.color, color2: s.color + '88',
-        flagUrl: null as string | null,
-        total: s.totalStickers,
-      })),
-      ...COUNTRIES.map(c => ({
-        code: c.code, name: c.name,
-        color1: c.colors[0], color2: c.colors[1],
-        flagUrl: c.flagUrl,
-        total: c.totalStickers,
-      })),
-    ].map(s => {
-      const ids = getStickerIds(s.code, s.total)
+        ...[INTRO_SECTION].map(s => ({
+          code: s.code, name: s.name,
+          color1: s.colors[0], color2: s.colors[1],
+          flagUrl: null as string | null,
+          ids: getSpecialStickerIds(s),
+        })),
+        ...COUNTRIES.map(c => ({
+          code: c.code, name: c.name,
+          color1: c.colors[0], color2: c.colors[1],
+          flagUrl: c.flagUrl,
+          ids: getStickerIds(c.code, c.totalStickers),
+        })),
+        ...[HIST_SECTION, CC_SECTION].map(s => ({
+          code: s.code, name: s.name,
+          color1: s.colors[0], color2: s.colors[1],
+          flagUrl: null as string | null,
+          ids: getSpecialStickerIds(s),
+        })),
+      ].map(s => {
+      const { ids } = s
       const sOwned = ids.filter(id => owned.has(id)).length
       const missing = ids.length - sOwned
       return { ...s, sOwned, missing, total: ids.length }

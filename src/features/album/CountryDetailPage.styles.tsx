@@ -179,7 +179,7 @@ export const StickerCheck = styled.div<{ $owned: boolean; $color: string }>`
 export const StickerId = styled.span<{ $owned: boolean; $color: string }>`
   font-size: 0.55rem;
   font-weight: 800;
-  color: ${({ $owned, $color }) => $owned ? $color : 'rgba(255,255,255,0.4)'};
+  color: ${({ $owned, $color }) => $owned ? $color : 'rgb(255, 255, 255)'};
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
   transition: color 0.15s;
 `

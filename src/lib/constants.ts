@@ -3,11 +3,30 @@ import type { Country, SpecialSection } from '../types'
 export const STICKERS_PER_COUNTRY = 20
 
 export const SPECIAL_SECTIONS: SpecialSection[] = [
-  { code: 'SPE-INT', name: 'Introdução',          totalStickers: 8,  color: '#FFD700' },
-  { code: 'SPE-EST', name: 'Estádios',             totalStickers: 12, color: '#00B4D8' },
-  { code: 'SPE-MAS', name: 'Mascote',              totalStickers: 4,  color: '#FF6B6B' },
-  { code: 'SPE-TRO', name: 'Troféu & História',   totalStickers: 6,  color: '#C77DFF' },
-  { code: 'SPE-HIS', name: 'Seleções Históricas', totalStickers: 10, color: '#06D6A0' },
+  {
+    code: 'FWC',
+    name: 'Página Inicial',
+    totalStickers: 9,   // FWC-00 até FWC-08
+    colors: ['#ffffff', '#FFD700'],
+    prefix: 'FWC',
+    startIndex: 0,
+  },
+  {
+    code: 'FWC',
+    name: 'FIFA World Cup History',
+    totalStickers: 11,  // FWC-09 até FWC-19
+     colors: ['#ffffff', '#FFD700'],
+    prefix: 'FWC',
+    startIndex: 9,
+  },
+  {
+    code: 'CC',
+    name: 'Coca-Cola',
+    totalStickers: 14,  // CC-01 até CC-14
+    colors: ['#ff0000', '#000000'],
+    prefix: 'CC',
+    startIndex: 1,
+  },
 ]
 
 export const COUNTRIES: Country[] = [
@@ -92,13 +111,32 @@ export const COUNTRIES_BY_GROUP = GROUPS.reduce((acc, group) => {
   return acc
 }, {} as Record<GroupLetter, Country[]>)
 
+// Gera IDs de seção especial: FWC-00..FWC-08, FWC-09..FWC-19, CC-01..CC-14
+export function getSpecialStickerIds(section: SpecialSection): string[] {
+  return Array.from({ length: section.totalStickers }, (_, i) => {
+    const num = section.startIndex + i
+    const padded = String(num).padStart(2, '0')
+    return `${section.prefix}-${padded}`
+  })
+}
+
+// Gera IDs de país: BRA-01..BRA-20
 export function getStickerIds(code: string, total: number): string[] {
   return Array.from({ length: total }, (_, i) =>
     `${code}-${String(i + 1).padStart(2, '0')}`
   )
 }
 
+// Referências rápidas às seções
+export const INTRO_SECTION = SPECIAL_SECTIONS[0]  // FWC-00 ~ FWC-08
+export const HIST_SECTION   = SPECIAL_SECTIONS[1]  // FWC-09 ~ FWC-19
+export const CC_SECTION     = SPECIAL_SECTIONS[2]  // CC-01  ~ CC-14
+
+// Ordem real do álbum:
+// Página Inicial → Países → FIFA History → Coca-Cola
 export const ALL_STICKER_IDS: string[] = [
-  ...SPECIAL_SECTIONS.flatMap(s => getStickerIds(s.code, s.totalStickers)),
+  ...getSpecialStickerIds(INTRO_SECTION),
   ...COUNTRIES.flatMap(c => getStickerIds(c.code, c.totalStickers)),
+  ...getSpecialStickerIds(HIST_SECTION),
+  ...getSpecialStickerIds(CC_SECTION),
 ]

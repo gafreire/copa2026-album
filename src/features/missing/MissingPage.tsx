@@ -5,7 +5,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useProfile } from '../../hooks/useProfile'
 import { useStickers } from '../../hooks/useStickers'
-import { COUNTRIES, SPECIAL_SECTIONS, getStickerIds } from '../../lib/constants'
+import { CC_SECTION, COUNTRIES, HIST_SECTION, INTRO_SECTION, getSpecialStickerIds, getStickerIds } from '../../lib/constants'
 import { AppNav } from '../../components/AppNav'
 import { Avatar, ThemeDot, ThemeToggle } from '../album/AlbumPage.styles'
 import {
@@ -26,17 +26,23 @@ type Section = {
 
 function buildSections(owned: Set<string>): Section[] {
   return [
-    ...SPECIAL_SECTIONS.map(s => ({
+    ...[INTRO_SECTION].map(s => ({
       code: s.code, name: s.name,
-      color1: s.color, color2: s.color + '88',
+      color1: s.colors[0], color2: s.colors[1],
       flagUrl: null as string | null,
-      ids: getStickerIds(s.code, s.totalStickers),
+      ids: getSpecialStickerIds(s),
     })),
     ...COUNTRIES.map(c => ({
       code: c.code, name: c.name,
       color1: c.colors[0], color2: c.colors[1],
       flagUrl: c.flagUrl,
       ids: getStickerIds(c.code, c.totalStickers),
+    })),
+    ...[HIST_SECTION, CC_SECTION].map(s => ({
+      code: s.code, name: s.name,
+      color1: s.colors[0], color2: s.colors[1],
+      flagUrl: null as string | null,
+      ids: getSpecialStickerIds(s),
     })),
   ]
     .map(s => ({ ...s, missingIds: s.ids.filter(id => !owned.has(id)) }))

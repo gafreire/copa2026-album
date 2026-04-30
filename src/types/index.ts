@@ -16,7 +16,9 @@ export type SpecialSection = {
   code: string
   name: string
   totalStickers: number
-  color: string
+  colors: [string, string]
+  prefix: string      // ex: 'FWC', 'CC'
+  startIndex: number  // índice inicial da numeração
 }
 
 export type Profile = {

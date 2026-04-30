@@ -77,7 +77,7 @@ export function LoginPage() {
 
       <Card>
         <CardTitle>
-          <h2>Sign in</h2>
+          <h2>Entrar</h2>
           <div />
         </CardTitle>
 
@@ -95,7 +95,7 @@ export function LoginPage() {
         </FieldGroup>
 
         <FieldGroup>
-          <label>Password</label>
+          <label>Senha</label>
           <InputWrapper>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -129,8 +129,8 @@ export function LoginPage() {
         </LoginButton>
 
         <SignUpRow>
-          Don't have an account?
-          <button onClick={() => navigate('/register')}>Sign up</button>
+          Não tem uma conta?
+          <button onClick={() => navigate('/register')}>Cadastrar </button>
         </SignUpRow>
       </Card>
     </Page>

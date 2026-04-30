@@ -89,12 +89,12 @@ export function RegisterPage() {
 
       <Card>
         <CardTitle>
-          <h2>Sign up</h2>
+          <h2>Cadastro</h2>
           <div />
         </CardTitle>
 
         <FieldGroup>
-          <label>Name</label>
+          <label>Nome</label>
           <InputWrapper>
             <input
               type="text"
@@ -120,7 +120,7 @@ export function RegisterPage() {
         </FieldGroup>
 
         <FieldGroup>
-          <label>Password</label>
+          <label>Senha</label>
           <InputWrapper>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -140,7 +140,7 @@ export function RegisterPage() {
         </FieldGroup>
 
         <FieldGroup>
-          <label>Confirm Password</label>
+          <label>Confirmar senha</label>
           <InputWrapper>
             <input
               type={showConfirm ? 'text' : 'password'}
@@ -173,8 +173,8 @@ export function RegisterPage() {
         </LoginButton>
 
         <SignUpRow>
-          Already have an account?
-          <button onClick={() => navigate('/login')}>Sign in</button>
+          Já tem uma conta
+          <button onClick={() => navigate('/login')}>Entrar </button>
         </SignUpRow>
       </Card>
     </Page>

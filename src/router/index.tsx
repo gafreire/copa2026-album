@@ -7,6 +7,7 @@ import { RegisterPage } from "../features/auth/RegisterPage";
 import { CountryDetailPage } from "../features/album/CountryDetailPage";
 import { MissingPage } from "../features/missing/MissingPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
+import { ProfilePage } from "../features/profile/ProfilePage";
 
 export function Router() {
   return (
@@ -17,7 +18,7 @@ export function Router() {
         <Route element={<AuthGuard />}>
           <Route path="/missing" element={<MissingPage />} />
           <Route path="/album" element={<AlbumPage />} />
-          <Route path="/profile" element={<AlbumPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/album/:code" element={<CountryDetailPage />} />
           <Route path="/missing" element={<MissingPage />} />

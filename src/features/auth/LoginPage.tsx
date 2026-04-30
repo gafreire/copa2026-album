@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import soccerBall from '../../assets/soccer-ball.svg'
 import { useAuth } from '../../hooks/useAuth'
 import {
   Card,
@@ -121,7 +121,7 @@ export function LoginPage() {
           {loading ? 'Loading...' : 'Login'}
           {!loading && (
             <img
-              src="/src/assets/soccer-ball.svg"
+              src={soccerBall}
               alt="soccer ball"
               style={{ display: 'flex', width: '30px' }}
             />
